@@ -12,7 +12,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fmt.Println("type localhost:8080/home into your browser")
+	fmt.Println("Go to localhost:8080/home in your browser")
 
 	http.HandleFunc("/home", homeHandler)
 
@@ -20,6 +20,6 @@ func main() {
 		fmt.Fprintf(w, "About page!")
 	})
 
-	// This MUST be last — it starts the server and blocks everything after it
+	// Opening the http server
 	http.ListenAndServe(":8080", nil)
 }
