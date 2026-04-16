@@ -1,25 +1,67 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
-	"html/template"
+	"log"
 	"net/http"
+	"os"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, _ := template.ParseFiles("templates/home.html")
-	tmpl.Execute(w, nil)
+// db dec so it can be accessed by handler
+var db *sql.DB
+var dbname string
+
+func pageHandler(w http.ResponseWriter, r *http.Request) {
+	// The slug of the webpage that the user visited on our site
+	slug := r.URL.Path[1:]
+	fmt.Print(slug)
+	// Query database for that page
+	// Stores the content of a webpage from MySQL Database
+	var content string // Declaring a variable w/o a value so explicity state the type
+	row := db.QueryRow("Select content From "+dbname+".pages Where slug = '?'", slug)
+	err := row.Scan(&content)
+
+	// if no page is found, 404 error
+	if err != nil {
+		http.NotFound(w, r)
+		return // don't do anything after this if slug not found
+	}
+
+	// Send content from db to browser
+	fmt.Fprint(w, content)
 }
 
 func main() {
-	fmt.Println("Go to localhost:8080/home in your browser")
+	var err error
 
-	http.HandleFunc("/home", homeHandler)
+	// Loading the .env file
+	godotenv.Load()
 
-	http.HandleFunc("/about", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "About page!")
-	})
+	// Getting the env variables (secrets o.o")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASS")
+	dbname = os.Getenv("DB_Name")
 
+	db, err = sql.Open("mysql", user+":"+pass+"@tcp(localhost:3306)/"+dbname)
+	if err != nil { // If the error wasn't nothing (if there was an error)
+		log.Fatal(err)
+	}
+
+	perr := db.Ping()
+	if perr != nil {
+		log.Fatal("Could not connect to database:", err)
+	}
+
+	defer db.Close()
+
+	http.HandleFunc("/", pageHandler)
+
+	// fmt.Println("Server running at http://localhost:8080")
+	log.Println("Server running at http://localhost:8080")
 	// Opening the http server
 	http.ListenAndServe(":8080", nil)
 }
