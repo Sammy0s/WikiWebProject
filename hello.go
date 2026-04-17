@@ -11,14 +11,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// db dec so it can be accessed by handler
+// db declaration so it can be accessed by handler
 var db *sql.DB
 var dbname string
 
 func pageHandler(w http.ResponseWriter, r *http.Request) {
 	// The slug of the webpage that the user visited on our site
 	slug := r.URL.Path[1:]
-	fmt.Print(slug)
+
 	// Query database for that page
 	// Stores the content of a webpage from MySQL Database
 	var content string // Declaring a variable w/o a value so explicity state the type
