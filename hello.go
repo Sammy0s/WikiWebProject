@@ -22,7 +22,7 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	// Query database for that page
 	// Stores the content of a webpage from MySQL Database
 	var content string // Declaring a variable w/o a value so explicity state the type
-	row := db.QueryRow("Select content From "+dbname+".pages Where slug = '?'", slug)
+	row := db.QueryRow("Select content From "+dbname+".pages Where slug = ?", slug)
 	err := row.Scan(&content)
 
 	// if no page is found, 404 error
@@ -44,7 +44,7 @@ func main() {
 	// Getting the env variables (secrets o.o")
 	user := os.Getenv("DB_USER")
 	pass := os.Getenv("DB_PASS")
-	dbname = os.Getenv("DB_Name")
+	dbname = os.Getenv("DB_NAME")
 
 	db, err = sql.Open("mysql", user+":"+pass+"@tcp(localhost:3306)/"+dbname)
 	if err != nil { // If the error wasn't nothing (if there was an error)
@@ -53,15 +53,15 @@ func main() {
 
 	perr := db.Ping()
 	if perr != nil {
-		log.Fatal("Could not connect to database:", err)
+		log.Fatal("Could not connect to database:", perr)
 	}
 
 	defer db.Close()
 
 	http.HandleFunc("/", pageHandler)
 
-	// fmt.Println("Server running at http://localhost:8080")
-	log.Println("Server running at http://localhost:8080")
+	// fmt.Println("Server running at http://localhost:8080/home")
+	log.Println("Server running at http://localhost:8080/home")
 	// Opening the http server
 	http.ListenAndServe(":8080", nil)
 }
