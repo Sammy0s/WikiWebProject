@@ -13,8 +13,13 @@ Requirements:
 
 - Programmed in Go
 
-- Utilize MySQL Database
-  - Store pages
+- Utilize MySQL Database (complete)
+  - Store pages (complete)
 
 - Search functionality
-  - Implement search through website for specific keywords/tutorials
+  - Implement search through website for specific keywords/tutorials (In progress)
+
+Extra goals:
+- User Login
+- Admin accounts have access to page creator dashboard 
+- Accessible page to create and publish new pages
