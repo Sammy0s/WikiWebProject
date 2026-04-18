@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"text/template"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -14,6 +15,20 @@ import (
 // db declaration so it can be accessed by handler
 var db *sql.DB
 var dbname string
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	// The home page
+
+	// later I'll do logic to show the most recent/most popular pages, but for now the generic home page
+	tmpl, err := template.ParseFiles("templates/home.html")
+
+	if err != nil {
+		log.Println("Template Error:", err)
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
 
 func pageHandler(w http.ResponseWriter, r *http.Request) {
 	// The slug of the webpage that the user visited on our site
@@ -48,7 +63,7 @@ func main() {
 
 	db, err = sql.Open("mysql", user+":"+pass+"@tcp(localhost:3306)/"+dbname)
 	if err != nil { // If the error wasn't nothing (if there was an error)
-		log.Fatal(err)
+		log.Fatal(err) // panic(err) ??
 	}
 
 	perr := db.Ping()
@@ -58,6 +73,7 @@ func main() {
 
 	defer db.Close()
 
+	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("/", pageHandler)
 
 	// fmt.Println("Server running at http://localhost:8080/home")
