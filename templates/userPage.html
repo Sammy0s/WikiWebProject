@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>       
+        <title>{{.Title}}</title>    
+    </head>
+    <body>
+        <!-- Everything visible to the user goes here -->
+        <div style="text-align: center;">
+            <a href="http://localhost:8080/home">Back to Home</a><br>
+            <h1>{{.Title}}</h1>
+            <h2>Written by, {{.Author}} on {{.CreatedDate}}   -   Last Updated on {{.LastUpdated}}</h2><br>
+            <p>{{.Content}}</p>
+        </div>
+    </body>
+</html>

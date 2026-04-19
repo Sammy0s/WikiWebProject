@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +10,15 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
+
+// Struct Declarations
+type PageData struct {
+	Title       string
+	Author      string
+	CreatedDate string
+	LastUpdated string
+	Content     string
+}
 
 // db declaration so it can be accessed by handler
 var db *sql.DB
@@ -35,19 +43,28 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	slug := r.URL.Path[1:]
 
 	// Query database for that page
-	// Stores the content of a webpage from MySQL Database
-	var content string // Declaring a variable w/o a value so explicity state the type
-	row := db.QueryRow("Select content From "+dbname+".pages Where slug = ?", slug)
-	err := row.Scan(&content)
+	// PageData struct that holds all the info for the page from SQL
+	var data PageData
+	row := db.QueryRow("Select title, author, dateCreated, LastUpdated, content From "+dbname+".pages Where slug = ?", slug)
+	err := row.Scan(&data.Title, &data.Author, &data.CreatedDate, &data.LastUpdated, &data.Content)
 
 	// if no page is found, 404 error
-	if err != nil {
+	if err != nil { // the error from the sql database query
 		http.NotFound(w, r)
 		return // don't do anything after this if slug not found
 	}
 
-	// Send content from db to browser
-	fmt.Fprint(w, content)
+	// Use the template and fill in this page's info
+	// The Pages template
+	tmpl, err := template.ParseFiles("templates/userPage.html")
+
+	if err != nil {
+		log.Println("Template Error:", err)
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+	// Fill the UserPage template with the url's data
+	tmpl.Execute(w, data)
 }
 
 func main() {
