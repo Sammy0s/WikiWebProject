@@ -2,19 +2,20 @@
 <html>
     <head>
         <!-- Invisible to user — metadata, title, CSS links go here -->        
-        <title>My Page</title>    
+        <title>WikiWeb</title>    
     </head>
     <body>
         <!-- Everything visible to the user goes here -->
         <div style="text-align: center;">
-            <h1>Hello World</h1>
-            <p>This is my page</p>
-            <a href="http://localhost:8080/about">About</a><br>
+            <h1>Welcome to WikiWeb!</h1>
+            <p>Check out some of our newest pages!</p>
+            <a href="http://localhost:8080/about">What's this?</a><br><br><hr><br>
+            <h2>These are user generated pages!</h2><br>
         </div>
         {{range .}}
         <div style="text-align: center;">
             <a href="/{{.Slug}}">{{.Title}}</a>
-            <p>Written by, {{.Author}} on {{.CreatedDate}}</p>
+            <p>Written by, {{.Author}} on {{.CreatedDate}}</p><br>
         </div>
         {{end}}
     </body>
