@@ -63,6 +63,11 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	// The slug of the webpage that the user visited on our site
 	slug := r.URL.Path[1:]
 
+	if slug == "" {
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
+	}
+
 	// Query database for that page
 	// PageData struct that holds all the info for the page from SQL
 	var data PageData
