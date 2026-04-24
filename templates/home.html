@@ -11,6 +11,11 @@
             <p>This is my page</p>
             <a href="http://localhost:8080/about">About</a><br>
         </div>
-
+        {{range .}}
+        <div style="text-align: center;">
+            <a href="/{{.Slug}}">{{.Title}}</a>
+            <p>Written by, {{.Author}} on {{.CreatedDate}}</p>
+        </div>
+        {{end}}
     </body>
 </html>

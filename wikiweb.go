@@ -13,6 +13,7 @@ import (
 
 // Struct Declarations
 type PageData struct {
+	Slug        string
 	Title       string
 	Author      string
 	CreatedDate string
@@ -26,6 +27,26 @@ var dbname string
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// The home page
+	// okay I want it to query the database to get all of the user gen pages
+	data := []PageData{}
+
+	// SQL command
+	rows, err := db.Query("Select slug, title, author, dateCreated, LastUpdated, content From "+dbname+".pages where pageType = ?", "user")
+
+	// Making sure we got results from the DB
+	if err != nil {
+		// throw an error
+		log.Println("DB error:", err)
+		return
+	}
+	defer rows.Close()
+
+	// Fill in info for every row
+	for rows.Next() {
+		var p PageData
+		rows.Scan(&p.Slug, &p.Title, &p.Author, &p.CreatedDate, &p.LastUpdated, &p.Content)
+		data = append(data, p)
+	}
 
 	// later I'll do logic to show the most recent/most popular pages, but for now the generic home page
 	tmpl, err := template.ParseFiles("templates/home.html")
@@ -35,7 +56,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, data)
 }
 
 func pageHandler(w http.ResponseWriter, r *http.Request) {
