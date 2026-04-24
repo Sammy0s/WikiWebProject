@@ -93,6 +93,49 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, data)
 }
 
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	// okay so the search query is in the url
+	// step 1: get the search query
+
+	query := r.URL.Query().Get("q")
+
+	// step 2: search the database for results
+
+	// SQL command
+	rows, err := db.Query("Select slug, title, author, dateCreated, LastUpdated, content From pages where title like ? or content like ? order by LastUpdated DESC", "%"+query+"%", "%"+query+"%")
+
+	// Making sure we got results from the DB
+	if err != nil {
+		// throw an error
+		log.Println("DB error:", err)
+		return
+	}
+	defer rows.Close()
+
+	// step 3: fill in a PageData slice (auto grows) with any/all results
+
+	data := []PageData{}
+
+	// Fill in info for every row
+	for rows.Next() {
+		var p PageData
+		rows.Scan(&p.Slug, &p.Title, &p.Author, &p.CreatedDate, &p.LastUpdated, &p.Content)
+		data = append(data, p)
+	}
+
+	// step 4: submit the PageData slice into the searchpage html template
+
+	// later I'll do logic to show the most recent/most popular pages, but for now the generic home page
+	tmpl, err := template.ParseFiles("templates/home.html")
+
+	if err != nil {
+		log.Println("Template Error:", err)
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+	tmpl.Execute(w, data)
+}
+
 func main() {
 	var err error
 
@@ -117,6 +160,7 @@ func main() {
 	defer db.Close()
 
 	http.HandleFunc("/home", homeHandler)
+	http.HandleFunc("/search", searchHandler)
 	http.HandleFunc("/", pageHandler)
 
 	// fmt.Println("Server running at http://localhost:8080/home")
