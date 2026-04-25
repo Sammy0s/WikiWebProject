@@ -23,6 +23,7 @@ type PageData struct {
 
 type SearchPage struct {
 	Query   string
+	Count   int
 	Results []PageData
 }
 
@@ -133,7 +134,7 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	// later I'll do logic to show the most recent/most popular pages, but for now the generic home page
 	tmpl, err := template.ParseFiles("templates/search.html")
 
-	page := SearchPage{Query: query, Results: data}
+	page := SearchPage{Query: query, Count: len(data), Results: data}
 
 	if err != nil {
 		log.Println("Template Error:", err)
