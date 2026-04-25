@@ -21,6 +21,11 @@ type PageData struct {
 	Content     string
 }
 
+type SearchPage struct {
+	Query   string
+	Results []PageData
+}
+
 // db declaration so it can be accessed by handler
 var db *sql.DB
 var dbname string
@@ -126,14 +131,16 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	// step 4: submit the PageData slice into the searchpage html template
 
 	// later I'll do logic to show the most recent/most popular pages, but for now the generic home page
-	tmpl, err := template.ParseFiles("templates/home.html")
+	tmpl, err := template.ParseFiles("templates/search.html")
+
+	page := SearchPage{Query: query, Results: data}
 
 	if err != nil {
 		log.Println("Template Error:", err)
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-	tmpl.Execute(w, data)
+	tmpl.Execute(w, page)
 }
 
 func main() {
