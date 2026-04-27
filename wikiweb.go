@@ -27,6 +27,13 @@ type SearchPage struct {
 	Results []PageData
 }
 
+type CreatePage struct {
+	ErrorMessage string
+	Title        string
+	Author       string
+	Content      string
+}
+
 // db declaration so it can be accessed by handler
 var db *sql.DB
 var dbname string
@@ -145,6 +152,33 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
+	var info CreatePage
+	if r.Method == "POST" {
+		// okay so this is a html sent info with the completed data form
+		// type CreatePage struct {
+		// 	ErrorMessage string
+		// 	Title		string
+		// 	Author		string
+		// 	Content		string
+		info.Title = r.FormValue("title")
+		info.Author = r.FormValue("author")
+		info.Content = r.FormValue("content")
+
+		if info.Title == "" || info.Author == "" || info.Content == "" {
+			info.ErrorMessage = "All fields are required!!"
+			tmpl, err := template.ParseFiles("templates/createPage.html")
+
+			if err != nil {
+				log.Println("Template Error:", err)
+				http.Error(w, "Internal Server Error", 500)
+				return
+			}
+			tmpl.Execute(w, info)
+			return
+		}
+
+	}
+
 	tmpl, err := template.ParseFiles("templates/createPage.html")
 
 	if err != nil {
@@ -152,7 +186,7 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, info)
 }
 
 func main() {
