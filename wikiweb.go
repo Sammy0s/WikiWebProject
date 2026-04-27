@@ -144,6 +144,17 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, page)
 }
 
+func createHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("templates/createPage.html")
+
+	if err != nil {
+		log.Println("Template Error:", err)
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+	tmpl.Execute(w, nil)
+}
+
 func main() {
 	var err error
 
@@ -169,6 +180,7 @@ func main() {
 
 	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("/search", searchHandler)
+	http.HandleFunc("/create-page", createHandler)
 	http.HandleFunc("/", pageHandler)
 
 	// fmt.Println("Server running at http://localhost:8080/home")

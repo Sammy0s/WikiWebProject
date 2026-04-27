@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Invisible to user — metadata, title, CSS links go here -->        
+        <title>WikiWeb</title>    
+    </head>
+    <body>
+        <!-- Everything visible to the user goes here -->
+        <div style="text-align: center;">
+            <h1>Page Creator!</h1>
+            <a href="http://localhost:8080/home">Back to Home</a><br><br><hr><br>
+            
+            <!-- Okay so this is the form so that users can search for things on the website-->
+            <form action="/home" method="post">
+                <label for id="title">Page Title</label><br>
+                <input type="text" id="title" name="title" placeholder="Title"><br><br>
+                <label for id="author">Author's name</label><br>
+                <input type="text" id="author" name="author" placeholder="Author"><br><br>
+                <label for id="content">Post Content</label><br>
+                <textarea id="content" name="content" placeholder="Your post here!" rows="10" cols="100"></textarea><br><br>
+                <button type="submit">Create Page</button>  
+            </form>
+
+        </div>
+    </body>
+</html>
