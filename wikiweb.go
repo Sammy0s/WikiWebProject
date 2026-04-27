@@ -161,12 +161,29 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// okay so this is a html sent info with the completed data form
 
+		// Need to sanitize user fields
 		info.Title = r.FormValue("title")
 		info.Author = r.FormValue("author")
 		info.Content = r.FormValue("content")
+		info.ErrorMessage = ""
 
 		if info.Title == "" || info.Author == "" || info.Content == "" {
-			info.ErrorMessage = "All fields are required!!"
+			info.ErrorMessage += "All fields are required!! "
+		}
+
+		if len(info.Title) > 20 {
+			info.ErrorMessage += "Title too long! Title must be less than 20 characters! "
+		}
+
+		if len(info.Author) > 20 {
+			info.ErrorMessage += "Author too long! Author must be less than 20 characters! "
+		}
+
+		if len(info.Content) > 3000 {
+			info.ErrorMessage += "Content too long! Content must be less than 3000 characters! "
+		}
+
+		if len(info.ErrorMessage) > 0 {
 			tmpl, err := template.ParseFiles("templates/createPage.html")
 
 			if err != nil {
@@ -177,6 +194,8 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 			tmpl.Execute(w, info)
 			return
 		}
+
+		log.Println("User created a new webpage. Title:" + info.Title + ", Author:" + info.Author + ", Content:" + info.Content)
 		// Valid-ish input- sanitize & submit to database
 		http.Redirect(w, r, "/home", http.StatusFound)
 		return
