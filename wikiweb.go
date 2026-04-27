@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"text/template"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -37,6 +38,17 @@ type CreatePage struct {
 // db declaration so it can be accessed by handler
 var db *sql.DB
 var dbname string
+
+func slugify(text string) string {
+	alph := "abcdefghijklmnopqrstuvwxyz-_"
+	slug := ""
+	for i := 0; i < len(text); i++ {
+		if strings.ContainsRune(alph, rune(text[i])) {
+			slug += string(text[i])
+		}
+	}
+	return slug
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// The home page
