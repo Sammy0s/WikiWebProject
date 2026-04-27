@@ -153,13 +153,14 @@ func searchHandler(w http.ResponseWriter, r *http.Request) {
 
 func createHandler(w http.ResponseWriter, r *http.Request) {
 	var info CreatePage
+	// type CreatePage struct {
+	// 	ErrorMessage string
+	// 	Title		string
+	// 	Author		string
+	// 	Content		string
 	if r.Method == "POST" {
 		// okay so this is a html sent info with the completed data form
-		// type CreatePage struct {
-		// 	ErrorMessage string
-		// 	Title		string
-		// 	Author		string
-		// 	Content		string
+
 		info.Title = r.FormValue("title")
 		info.Author = r.FormValue("author")
 		info.Content = r.FormValue("content")
@@ -176,7 +177,9 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 			tmpl.Execute(w, info)
 			return
 		}
-
+		// Valid-ish input- sanitize & submit to database
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
 	}
 
 	tmpl, err := template.ParseFiles("templates/createPage.html")

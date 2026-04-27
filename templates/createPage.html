@@ -14,24 +14,19 @@
             <form action="/create-page" method="post">
                 <!-- Page Title Input -->
                 <label for id="title">Page Title</label><br>
-                {{if .Title}}
                 <input type="text" id="title" name="title" placeholder="Title" value="{{.Title}}"><br><br>
-                {{else}}
-                <input type="text" id="title" name="title" placeholder="Title"><br><br>
-                {{end}}
+                
                 
                 <!-- Page Author Input -->
                 <label for id="author">Author's name</label><br>
-                {{if .Author}}
                 <input type="text" id="author" name="author" placeholder="Author" value="{{.Author}}"><br><br>
-                {{else}}
-                <input type="text" id="author" name="author" placeholder="Author"><br><br>
-                {{end}}
+                
 
                 <!-- Page Content Input -->
                 <label for id="content">Post Content</label><br>
-                <textarea id="content" name="content" placeholder="Your post here!" value="{{.Content}}" rows="10" cols="100"></textarea><br><br>
+                <textarea id="content" name="content" placeholder="Your post here!" rows="10" cols="100">{{.Content}}</textarea><br><br>
                 
+
                 <!-- Error Message input -->
                 {{if .ErrorMessage}}
                 <p style="color: red;">{{.ErrorMessage}}</p>
