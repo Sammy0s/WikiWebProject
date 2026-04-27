@@ -31,6 +31,8 @@
                 <!-- Page Content Input -->
                 <label for id="content">Post Content</label><br>
                 <textarea id="content" name="content" placeholder="Your post here!" value="{{.Content}}" rows="10" cols="100"></textarea><br><br>
+                
+                <!-- Error Message input -->
                 {{if .ErrorMessage}}
                 <p style="color: red;">{{.ErrorMessage}}</p>
                 {{end}}
