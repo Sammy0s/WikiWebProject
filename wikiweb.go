@@ -33,6 +33,7 @@ type CreatePage struct {
 	Title        string
 	Author       string
 	Content      string
+	Slug         string
 }
 
 // db declaration so it can be accessed by handler
@@ -209,6 +210,20 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Println("User created a new webpage. Title:" + info.Title + ", Author:" + info.Author + ", Content:" + info.Content)
 		// Valid-ish input- sanitize & submit to database
+
+		// Submit new page to database
+		info.Slug = slugify(info.Title)
+
+		// SQL command
+		_, err := db.Exec("INSERT INTO "+dbname+".pages (slug, title, author, content, pageType) VALUES (?, ?, ?, ?, ?)",
+			info.Slug, info.Title, info.Author, info.Content, "user")
+
+		if err != nil {
+			log.Println("DB error:", err)
+			http.Error(w, "Internal Server Error", 500)
+			return
+		}
+
 		http.Redirect(w, r, "/home", http.StatusFound)
 		return
 	}
