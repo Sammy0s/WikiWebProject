@@ -41,11 +41,14 @@ var db *sql.DB
 var dbname string
 
 func slugify(text string) string {
+	text = strings.ToLower(text)
 	alph := "abcdefghijklmnopqrstuvwxyz-_"
 	slug := ""
 	for i := 0; i < len(text); i++ {
 		if strings.ContainsRune(alph, rune(text[i])) {
-			slug += string(text[i])
+			slug += strings.ToLower(string(text[i]))
+		} else if strings.EqualFold(string(text[i]), " ") {
+			slug += "-"
 		}
 	}
 	return slug
