@@ -10,10 +10,10 @@
             <h1>{{.Title}}</h1>
             <h2>Written by, {{.Author}} on {{.CreatedDate}}   -   Last Updated on {{.LastUpdated}}</h2><br>
             <p>{{.Content}}</p><br><br><br>
-            
+
             <!-- Okay so this is the form so that users can search for things on the website-->
             <form action="/edit" method="GET">
-                <input type="hidden" value={{.Slug}} name="q">
+                <input type="hidden" value={{.Slug}} name="p">
                 <button type="submit">Edit this Page</button>  
             </form>
         </div>

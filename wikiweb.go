@@ -248,7 +248,7 @@ func isValidPageInfo(info CreatePage) string {
 	// okay so this is a html sent info with the completed data form
 	// Goes through the same validation process- This can be a separate function.
 
-	// Need to sanitize user fields
+	// Need to sanitize user fields. This is what info looks like
 	// info.Title = r.FormValue("title")
 	// info.Author = r.FormValue("author")
 	// info.Content = r.FormValue("content")
@@ -283,10 +283,6 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	// 	Author		string
 	// 	Content		string
 
-	query := r.URL.Query().Get("q")
-
-	slug := r.URL.Path[1:]
-
 	if r.Method == "POST" {
 		// okay so this is a html sent info with the completed data form
 		// Goes through the same validation process- This can be a separate function.
@@ -312,13 +308,11 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 			tmpl.Execute(w, info)
 			return
 		}
-
+		// if there's not an error, push change(s)
 		log.Println("User edited an existing webpage. Title:" + info.Title + ", Author:" + info.Author + ", Content:" + info.Content)
 		// Valid-ish input- sanitize & submit to database
 
-		// Submit new page to database
-
-		info.Slug = slugify(info.Title)
+		// Update a page in the database
 
 		// // SQL command
 		// _, err := db.Exec("INSERT INTO "+dbname+".pages (slug, title, author, content, pageType) VALUES (?, ?, ?, ?, ?)",
@@ -334,8 +328,10 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// NOT a POST request
-	log.Println("The user is trying to edit the page at:" + slug + " Query:" + query)
+	// NOT a POST request- Display page & prefil with info in the database
+	slug := r.URL.Query().Get("p")
+
+	log.Println("The user is trying to edit the page:" + slug)
 
 	tmpl, err := template.ParseFiles("templates/edit.html")
 
