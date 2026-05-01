@@ -238,6 +238,43 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, info)
 }
 
+// TODO implement
+func sanitizeUserInput(text string) string {
+	// sanitize user input so that the user doesn't put anything crazy in it
+	return text
+}
+
+func isValidPageInfo(info CreatePage) string {
+	// okay so this is a html sent info with the completed data form
+	// Goes through the same validation process- This can be a separate function.
+
+	// Need to sanitize user fields
+	// info.Title = r.FormValue("title")
+	// info.Author = r.FormValue("author")
+	// info.Content = r.FormValue("content")
+	// info.ErrorMessage = ""
+
+	errmsg := ""
+
+	if info.Title == "" || info.Author == "" || info.Content == "" {
+		errmsg += "All fields are required!! "
+	}
+
+	if len(info.Title) > 20 {
+		errmsg += "Title too long! Title must be less than 20 characters! "
+	}
+
+	if len(info.Author) > 20 {
+		errmsg += "Author too long! Author must be less than 20 characters! "
+	}
+
+	if len(info.Content) > 3000 {
+		errmsg += "Content too long! Content must be less than 3000 characters! "
+	}
+
+	return info.ErrorMessage
+}
+
 func editHandler(w http.ResponseWriter, r *http.Request) {
 	var info CreatePage
 	// type CreatePage struct {
@@ -246,36 +283,25 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	// 	Author		string
 	// 	Content		string
 
-	// query := r.URL.Query().Get("q")
+	query := r.URL.Query().Get("q")
 
 	slug := r.URL.Path[1:]
 
 	if r.Method == "POST" {
 		// okay so this is a html sent info with the completed data form
+		// Goes through the same validation process- This can be a separate function.
 
 		// Need to sanitize user fields
-		info.Title = r.FormValue("title")
-		info.Author = r.FormValue("author")
-		info.Content = r.FormValue("content")
+		info.Title = sanitizeUserInput(r.FormValue("title"))
+		info.Author = sanitizeUserInput(r.FormValue("author"))
+		info.Content = sanitizeUserInput(r.FormValue("content"))
 		info.ErrorMessage = ""
 
-		if info.Title == "" || info.Author == "" || info.Content == "" {
-			info.ErrorMessage += "All fields are required!! "
-		}
+		info.ErrorMessage = isValidPageInfo(info)
 
-		if len(info.Title) > 20 {
-			info.ErrorMessage += "Title too long! Title must be less than 20 characters! "
-		}
-
-		if len(info.Author) > 20 {
-			info.ErrorMessage += "Author too long! Author must be less than 20 characters! "
-		}
-
-		if len(info.Content) > 3000 {
-			info.ErrorMessage += "Content too long! Content must be less than 3000 characters! "
-		}
-
+		// if there's an error,
 		if len(info.ErrorMessage) > 0 {
+			// Reload the page but with an error message to go with it (error message != "" so will be shown in template)
 			tmpl, err := template.ParseFiles("templates/createPage.html")
 
 			if err != nil {
@@ -309,7 +335,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// NOT a POST request
-	log.Println("The user is trying to edit the page at:" + slug)
+	log.Println("The user is trying to edit the page at:" + slug + " Query:" + query)
 
 	tmpl, err := template.ParseFiles("templates/edit.html")
 
