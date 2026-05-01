@@ -330,8 +330,24 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 
 	// NOT a POST request- Display page & prefil with info in the database
 	slug := r.URL.Query().Get("p")
-
 	log.Println("The user is trying to edit the page:" + slug)
+
+	// 	type CreatePage struct { info struct
+	// 	ErrorMessage string
+	// 	Title        string
+	// 	Author       string
+	// 	Content      string
+	// 	Slug         string
+
+	// var info CreatePage
+	row := db.QueryRow("Select slug, title, author, content From "+dbname+".pages Where slug = ?", slug)
+	err := row.Scan(&info.Slug, &info.Title, &info.Author, &info.Content)
+
+	// if no page is found, 404 error
+	if err != nil { // the error from the sql database query
+		http.NotFound(w, r)
+		return // don't do anything after this if slug not found
+	}
 
 	tmpl, err := template.ParseFiles("templates/edit.html")
 
