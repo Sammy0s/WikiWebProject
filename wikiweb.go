@@ -238,6 +238,89 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, info)
 }
 
+func editHandler(w http.ResponseWriter, r *http.Request) {
+	var info CreatePage
+	// type CreatePage struct {
+	// 	ErrorMessage string
+	// 	Title		string
+	// 	Author		string
+	// 	Content		string
+
+	// query := r.URL.Query().Get("q")
+
+	slug := r.URL.Path[1:]
+
+	if r.Method == "POST" {
+		// okay so this is a html sent info with the completed data form
+
+		// Need to sanitize user fields
+		info.Title = r.FormValue("title")
+		info.Author = r.FormValue("author")
+		info.Content = r.FormValue("content")
+		info.ErrorMessage = ""
+
+		if info.Title == "" || info.Author == "" || info.Content == "" {
+			info.ErrorMessage += "All fields are required!! "
+		}
+
+		if len(info.Title) > 20 {
+			info.ErrorMessage += "Title too long! Title must be less than 20 characters! "
+		}
+
+		if len(info.Author) > 20 {
+			info.ErrorMessage += "Author too long! Author must be less than 20 characters! "
+		}
+
+		if len(info.Content) > 3000 {
+			info.ErrorMessage += "Content too long! Content must be less than 3000 characters! "
+		}
+
+		if len(info.ErrorMessage) > 0 {
+			tmpl, err := template.ParseFiles("templates/createPage.html")
+
+			if err != nil {
+				log.Println("Template Error:", err)
+				http.Error(w, "Internal Server Error", 500)
+				return
+			}
+			tmpl.Execute(w, info)
+			return
+		}
+
+		log.Println("User edited an existing webpage. Title:" + info.Title + ", Author:" + info.Author + ", Content:" + info.Content)
+		// Valid-ish input- sanitize & submit to database
+
+		// Submit new page to database
+
+		info.Slug = slugify(info.Title)
+
+		// // SQL command
+		// _, err := db.Exec("INSERT INTO "+dbname+".pages (slug, title, author, content, pageType) VALUES (?, ?, ?, ?, ?)",
+		// 	info.Slug, info.Title, info.Author, info.Content, "user")
+
+		// if err != nil {
+		// 	log.Println("DB error:", err)
+		// 	http.Error(w, "Internal Server Error", 500)
+		// 	return
+		// }
+
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
+	}
+
+	// NOT a POST request
+	log.Println("The user is trying to edit the page at:" + slug)
+
+	tmpl, err := template.ParseFiles("templates/edit.html")
+
+	if err != nil {
+		log.Println("Template Error:", err)
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+	tmpl.Execute(w, info)
+}
+
 func main() {
 	var err error
 
@@ -264,6 +347,7 @@ func main() {
 	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("/search", searchHandler)
 	http.HandleFunc("/create-page", createHandler)
+	http.HandleFunc("/edit", editHandler)
 	http.HandleFunc("/", pageHandler)
 
 	// fmt.Println("Server running at http://localhost:8080/home")
