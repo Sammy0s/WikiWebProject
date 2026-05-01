@@ -9,7 +9,8 @@
             <a href="http://localhost:8080/home">Back to Home</a><br>
             <h1>{{.Title}}</h1>
             <h2>Written by, {{.Author}} on {{.CreatedDate}}   -   Last Updated on {{.LastUpdated}}</h2><br>
-            <p>{{.Content}}</p>
+            <p>{{.Content}}</p><br><br><br>
+            <a href="/edit/{{.Slug}}">Edit this page</a>
         </div>
     </body>
 </html>

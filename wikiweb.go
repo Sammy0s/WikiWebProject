@@ -97,8 +97,8 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	// Query database for that page
 	// PageData struct that holds all the info for the page from SQL
 	var data PageData
-	row := db.QueryRow("Select title, author, dateCreated, LastUpdated, content From "+dbname+".pages Where slug = ?", slug)
-	err := row.Scan(&data.Title, &data.Author, &data.CreatedDate, &data.LastUpdated, &data.Content)
+	row := db.QueryRow("Select slug, title, author, dateCreated, LastUpdated, content From "+dbname+".pages Where slug = ?", slug)
+	err := row.Scan(&data.Slug, &data.Title, &data.Author, &data.CreatedDate, &data.LastUpdated, &data.Content)
 
 	// if no page is found, 404 error
 	if err != nil { // the error from the sql database query
