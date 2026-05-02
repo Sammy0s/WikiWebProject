@@ -275,7 +275,7 @@ func isValidPageInfo(info CreatePage) string {
 		errmsg += "Content too long! Content must be less than 3000 characters! "
 	}
 
-	return info.ErrorMessage
+	return errmsg
 }
 
 func editHandler(w http.ResponseWriter, r *http.Request) {
