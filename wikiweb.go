@@ -287,6 +287,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	// 	Content		string
 
 	if r.Method == "POST" {
+		log.Println("Browser sent a POST request")
 		// okay so this is a html sent info with the completed data form
 		// Goes through the same validation process- This can be a separate function.
 
@@ -294,6 +295,7 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		info.Title = sanitizeUserInput(r.FormValue("title"))
 		info.Author = sanitizeUserInput(r.FormValue("author"))
 		info.Content = sanitizeUserInput(r.FormValue("content"))
+		info.Slug = slugify(sanitizeUserInput(r.FormValue("p")))
 		info.ErrorMessage = ""
 
 		info.ErrorMessage = isValidPageInfo(info)
@@ -312,20 +314,20 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// if there's not an error, push change(s)
-		log.Println("User edited an existing webpage. Title:" + info.Title + ", Author:" + info.Author + ", Content:" + info.Content)
+		log.Println("User edited an existing webpage. Slug: " + info.Slug + "Title:" + info.Title + ", Author:" + info.Author + ", Content:" + info.Content)
 		// Valid-ish input- sanitize & submit to database
 
 		// Update a page in the database
 
 		// // SQL command
-		// _, err := db.Exec("INSERT INTO "+dbname+".pages (slug, title, author, content, pageType) VALUES (?, ?, ?, ?, ?)",
-		// 	info.Slug, info.Title, info.Author, info.Content, "user")
+		_, err := db.Exec("UPDATE "+dbname+".pages set slug = ?, title = ?, author = ?, content = ? where slug = ?",
+			info.Slug, info.Title, info.Author, info.Content, info.Slug)
 
-		// if err != nil {
-		// 	log.Println("DB error:", err)
-		// 	http.Error(w, "Internal Server Error", 500)
-		// 	return
-		// }
+		if err != nil {
+			log.Println("DB error:", err)
+			http.Error(w, "Internal Server Error", 500)
+			return
+		}
 
 		http.Redirect(w, r, "/home", http.StatusFound)
 		return

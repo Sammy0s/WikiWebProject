@@ -10,7 +10,7 @@
             <h1>Page Editor!</h1>
             <a href="http://localhost:8080/home">Back to Home</a><br><br><hr><br>
             
-            <p>this is an edit page</p>
+            <p>You are editing "{{.Title}}"!</p>
 
             <!-- Okay so this is the form so that users can edit pages on the website-->
             <form action="/edit" method="post">
@@ -32,7 +32,10 @@
                 {{if .ErrorMessage}}
                 <p style="color: red;">{{.ErrorMessage}}</p>
                 {{end}}
-                <button type="submit">Create Page</button>  
+
+                <input type="hidden" id="p" value={{.Slug}} name="p">
+
+                <button type="submit">Update Page</button>  
             </form>
         </div>
     </body>
