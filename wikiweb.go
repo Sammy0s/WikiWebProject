@@ -10,6 +10,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 // Struct Declarations
@@ -39,6 +40,8 @@ type CreatePage struct {
 // db declaration so it can be accessed by handler
 var db *sql.DB
 var dbname string
+var p *bluemonday.Policy
+var s *bluemonday.Policy
 
 func slugify(text string) string {
 	text = strings.ToLower(text)
@@ -241,10 +244,13 @@ func createHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, info)
 }
 
-// TODO implement
-func sanitizeUserInput(text string) string {
+// Utilizes bluemonday package to sanitize either strictly (s) or normal (p)
+func sanitizeUserInput(text string, strict bool) string {
 	// sanitize user input so that the user doesn't put anything crazy in it
-	return text
+	if strict {
+		return s.Sanitize(text)
+	}
+	return p.Sanitize(text)
 }
 
 func isValidPageInfo(info CreatePage) string {
@@ -291,13 +297,11 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		// okay so this is a html sent info with the completed data form
 		// Goes through the same validation process- This can be a separate function.
 
-		// Need to sanitize user fields
-		info.Title = sanitizeUserInput(r.FormValue("title"))
-		info.Author = sanitizeUserInput(r.FormValue("author"))
-		info.Content = sanitizeUserInput(r.FormValue("content"))
-		info.Slug = slugify(sanitizeUserInput(r.FormValue("p")))
-		info.ErrorMessage = ""
-
+		// Need to sanitize everything from the browser cuz can be edited
+		info.Title = sanitizeUserInput(r.FormValue("title"), true)      // Strict Sanitize
+		info.Author = sanitizeUserInput(r.FormValue("author"), true)    // Strict Sanitize
+		info.Content = sanitizeUserInput(r.FormValue("content"), false) // Lose Sanitize
+		info.Slug = slugify(sanitizeUserInput(r.FormValue("p"), true))  // Strict Sanitize
 		info.ErrorMessage = isValidPageInfo(info)
 
 		// if there's an error,
@@ -386,6 +390,10 @@ func main() {
 	}
 
 	defer db.Close()
+
+	// Defining sanitizing policies
+	p = bluemonday.UGCPolicy()
+	s = bluemonday.StrictPolicy()
 
 	http.HandleFunc("/home", homeHandler)
 	http.HandleFunc("/search", searchHandler)
