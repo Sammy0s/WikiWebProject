@@ -17,9 +17,9 @@ Requirements:
   - Store pages (complete)
 
 - Search functionality
-  - Implement search through website for specific keywords/tutorials (In progress)
+  - Implement search through website for specific keywords/tutorials (complete)
 
 Extra goals:
 - User Login
 - Admin accounts have access to page creator dashboard 
-- Accessible page to create and publish new pages
+- Accessible page to create and publish new pages (in progress)
