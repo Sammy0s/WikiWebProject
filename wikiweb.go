@@ -324,8 +324,8 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 		// Update a page in the database
 
 		// // SQL command
-		_, err := db.Exec("UPDATE "+dbname+".pages set slug = ?, title = ?, author = ?, content = ? where slug = ?",
-			info.Slug, info.Title, info.Author, info.Content, info.Slug)
+		_, err := db.Exec("UPDATE "+dbname+".pages set title = ?, author = ?, content = ? where slug = ?",
+			info.Title, info.Author, info.Content, info.Slug)
 
 		if err != nil {
 			log.Println("DB error:", err)
