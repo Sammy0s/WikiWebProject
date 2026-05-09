@@ -28,7 +28,7 @@ Make sure you set up environment variables in a file called .env
 Follows the same template as .env.example
 
 ``` 
-DB_PASSWORD=yourpassword
+DB_PASS=yourpassword
 DB_USER=root
 DB_NAME=yourdbname 
 ```
