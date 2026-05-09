@@ -2,6 +2,15 @@
 
 Created for Code2College End of year Project in May, 2026
 
+## Features
+- Home page listing all user generated wiki pages
+- Individual wiki pages served dynamically from the database
+- Search pages by title or content
+- Create new wiki pages
+- Edit existing wiki pages
+- Input sanitization via bluemonday
+
+
 ## Getting started
 This repo works side by side with a MySQL Server that contains a table with the following attributes
 
